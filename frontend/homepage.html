@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asalkar Healthy Hub</title>
+    <!-- ✅ FIX: Corrected paths to be absolute from the server root -->
+    <link rel="stylesheet" href="../static/style.css"> 
+    <link rel="icon" href="../static/images/logo.jpg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Loading Animation -->
+  <!-- <div class="loading-screen" id="loadingScreen">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading Pure Goodness...</p>
+    </div>
+  </div> -->
+
+  <!-- ✅ FIX: Added the <p> tag for the loading text -->
+  <div class="preloader">
+    <div class="logo-loader">
+        <img src="../static/images/logo.jpg" alt="Asalkar Healthy Hub Loading...">
+    </div>
+    <p class="loader-text">Loading Pure Goodness...</p>
+</div>
+
+  
+
+  <header class="header">
+    <div class="header-container">
+      <a href="homepage.html" class="logo animate-slide-in">
+        <!-- ✅ FIX: Corrected path -->
+        <img src="../static/images/logo.jpg" alt="Asalkar Healthy Hub" />
+        <span>Asalkar Healthy Hub</span>
+      </a>
+      <nav class="nav">
+        <!-- This ul will be updated by JavaScript based on login state -->
+        <ul class="nav-menu" id="navMenu">
+          <!-- Populated by JavaScript -->
+        </ul>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- The rest of your HTML structure remains the same -->
+  <div class="particles-bg">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+  </div>
+
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="word">Pure</span> <span class="word">Cold-Pressed</span> <span class="word">Oils</span>
+        <span class="word">&</span> <span class="word">Organic</span> <span class="word">Products</span>
+      </h1>
+      <p class="hero-subtitle">We deliver health through purity – straight from farm to your kitchen.</p>
+      <div class="hero-stats">
+        <div class="stat-item"><i class="fas fa-leaf"></i><span class="stat-number" data-target="100">0</span><span class="stat-label">% Natural</span></div>
+        <div class="stat-item"><i class="fas fa-award"></i><span class="stat-number" data-target="5">0</span><span class="stat-label">Star Quality</span></div>
+        <div class="stat-item"><i class="fas fa-heart"></i><span class="stat-number" data-target="1000">0</span><span class="stat-label">+ Happy Customers</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Our Commitment</h2>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-seedling"></i></div><h3>100% Organic</h3><p>Pure, chemical-free ingredients straight from nature</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-snowflake"></i></div><h3>Cold-Pressed</h3><p>Traditional methods preserve all natural nutrients</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-certificate"></i></div><h3>FSSAI Certified</h3><p>Follows strict food safety guidelines</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-home"></i></div><h3>Family Business</h3><p>Made with love in Maharashtra, India</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="products" id="products">
+    <div class="container">
+      <h2 class="section-title">Our Premium Products</h2>
+      <div class="product-filter">
+        <button class="filter-btn active" data-filter="all">All Products</button>
+        <button class="filter-btn" data-filter="Coconut">🥥 Coconut</button>
+        <button class="filter-btn" data-filter="Groundnut">🥜 Groundnut</button>
+        <button class="filter-btn" data-filter="Sunflower">🌻 Sunflower</button>
+        <button class="filter-btn" data-filter="Safflower">🌸 Safflower</button>
+      </div>
+      <div class="products-grid" id="productsGrid">
+        <!-- Products will be dynamically inserted here -->
+      </div>
+    </div>
+  </section>
+
+  <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></button>
+
+  <div class="floating-cart"><button class="cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></button></div>
+  
+  <div class="cart-modal" id="cartModal">
+    <div class="cart-modal-content">
+      <button class="close-cart-btn" id="closeCartBtn">×</button>
+      <h2>Your Cart</h2>
+      <div class="cart-items-container" id="cartItemsContainer"><p class="cart-empty-message">Your cart is empty.</p></div>
+      <div class="cart-footer"><div class="cart-total"><h3>Total: <span id="cartTotal">₹0.00</span></h3></div><button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button></div>
+    </div>
+  </div>
+
+  <footer class="about" id="about">
+    <div class="about-content">
+        <div class="about-hero-section"><h2 class="section-title">Our Story</h2></div>
+        <div class="about-grid">
+          <div class="about-card"><p><span class="highlight">Asalkar Healthy Hub</span> is a family-run business committed to delivering high-quality, cold-pressed oils from the finest natural ingredients. We focus on traditional methods to preserve nutrients in every drop.</p></div>
+          <div class="about-card"><p>All our products are made in <span class="highlight">Maharashtra, India</span>, and follow FSSAI food safety guidelines. We cater to health-conscious individuals looking for organic and chemical-free cooking oils.</p></div>
+          <div class="about-card"><p>Join us in our journey towards a healthier lifestyle—powered by <span class="highlight">purity and tradition</span>. Every bottle represents our commitment to your family's health and well-being.</p></div>
+        </div>
+        <div class="footer-features-section">
+          <h2 class="section-title">Why Choose Us?</h2>
+          <div class="footer-features-grid">
+            <div class="footer-feature-item"><span class="footer-feature-icon">🌱</span><h3>100% Natural</h3><p>Pure, cold-pressed oils with no chemicals or preservatives</p></div>
+            <div class="footer-feature-item"><span class="footer-feature-icon">🏭</span><h3>Traditional Methods</h3><p>Time-tested techniques that preserve maximum nutrients</p></div>
+            <div class="footer-feature-item"><span class="footer-feature-icon">✅</span><h3>FSSAI Certified</h3><p>Meets all food safety and quality standards</p></div>
+            <div class="footer-feature-item"><span class="footer-feature-icon">👨‍👩‍👧‍👦</span><h3>Family Business</h3><p>Three generations of expertise and care</p></div>
+          </div>
+        </div>
+        <div class="social-links">
+            <a href="https://www.instagram.com/asalkarhealthyhub?utm_source=qr&igsh=cTl1Z3VtOHBzaXY=" class="social-link"><i class="fab fa-instagram"></i></a><a href="https://wa.me/message/EQ4OGE5ZZH3DF1" class="social-link"><i class="fab fa-whatsapp"></i></a>
+        </div>
+    </div>
+    <p class="copyright">© 2025 Asalkar Healthy Hub. All rights reserved.</p>
+  </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ✅ FIX: ADDED SCRIPT TO HIDE THE PRELOADER
+    const preloader = document.querySelector('.preloader');
+    window.addEventListener('load', () => {
+    if (preloader) {
+        // Hides the preloader once the page's HTML is ready, without waiting for all images.
+        // This provides a fast "time-to-content" experience for the user.
+        preloader.style.opacity = '0';
+        // After the fade-out transition (e.g., 500ms), set display to none so it's removed from the page flow.
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 500);
+    }
+    });
+    
+    // --- ELEMENT SELECTORS ---
+    const loadingScreen = document.getElementById('loadingScreen');
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+    const backToTop = document.getElementById('backToTop');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const productsGrid = document.getElementById('productsGrid');
+    const cartModal = document.getElementById('cartModal');
+    const cartBtn = document.getElementById('cartBtn');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartItemsContainer = document.getElementById('cartItemsContainer');
+    const cartCountElement = document.querySelector('.cart-count');
+    const cartTotalElement = document.getElementById('cartTotal');
+    const cartEmptyMessage = document.querySelector('.cart-empty-message');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    
+    const API_BASE_URL = "http://localhost:5000";
+    let cart = JSON.parse(localStorage.getItem('userCart')) || [];
+
+    // --- DYNAMIC CONTENT & AUTHENTICATION ---
+    async function loadProducts() {
+        try {
+            // ✅ FIX 1: Used backticks for the template literal string
+            const response = await fetch(`${API_BASE_URL}/api/products`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const products = await response.json();
+            
+            productsGrid.innerHTML = '';
+            
+            products.forEach(p => {
+                const productCard = document.createElement('div');
+                productCard.className = 'card product-card';
+                productCard.dataset.category = p.category;
+                
+                const isOutOfStock = p.stock < 1;
+                const buttonClass = isOutOfStock ? 'add-to-cart-btn pre-order' : 'add-to-cart-btn';
+                const buttonText = isOutOfStock 
+                    ? '<i class="fas fa-industry"></i> Pre-Order' 
+                    : '<i class="fas fa-shopping-cart"></i> Add to Cart';
+                
+                productCard.innerHTML = `
+                    <div class="card-image">
+                        <img src="${API_BASE_URL}/static${p.image}" alt="${p.name}">
+                        <div class="card-overlay">
+                            <div class="card-actions">
+                                <button class="wishlist-btn" title="Add to Wishlist"><i class="fas fa-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${p.name}</h3>
+                        <p class="product-description">${p.description}</p>
+                        <div class="price-section">
+                            <span class="price">₹${p.price.toFixed(2)}</span>
+                        </div>
+                        <button class="${buttonClass}" data-id="${p._id}" data-name="${p.name}" data-price="${p.price}" data-image="${API_BASE_URL}/static${p.image}" data-stock="${p.stock}">
+                            ${buttonText}
+                        </button>
+                    </div>
+                `;
+                productsGrid.appendChild(productCard);
+            });
+        } catch (error) {
+            productsGrid.innerHTML = '<p style="color: red; text-align: center;">Failed to load products. Please try again later.</p>';
+            console.error('Error loading products:', error);
+        }
+    }
+
+    // ✅ FIX 2: Removed duplicated functions. This is the single, correct version.
+    function updateAuthenticationState() {
+        const userName = localStorage.getItem('userName');
+        if (userName) {
+            navMenu.innerHTML = `
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#products" class="nav-link">Products</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="my-orders.html" class="nav-link">My Orders</a></li>
+                <li><span class="nav-link" style="color: var(--accent);">Welcome, ${userName}</span></li>
+                <li><a href="#" id="logoutBtn" class="nav-link auth-btn">Logout</a></li>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.clear();
+                alert('You have been logged out.');
+                window.location.reload();
+            });
+        } else {
+            navMenu.innerHTML = `
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#products" class="nav-link">Products</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="auth.html" class="nav-link auth-btn">Login / Sign Up</a></li>
+            `;
+        }
+    }
+
+    // --- SHOPPING CART LOGIC ---
+    function saveCart() {
+        localStorage.setItem('userCart', JSON.stringify(cart));
+    }
+
+    function addToCart(product) {
+        const existingItem = cart.find(item => item.id === product.id);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ ...product, quantity: 1 });
+        }
+        saveCart();
+        renderCart();
+    }
+
+    function renderCart() {
+        cartItemsContainer.innerHTML = '';
+        if (cart.length === 0) {
+            cartItemsContainer.appendChild(cartEmptyMessage);
+            cartEmptyMessage.style.display = 'block';
+        } else {
+            cartEmptyMessage.style.display = 'none';
+            cart.forEach(item => {
+                const cartItemEl = document.createElement('div');
+                cartItemEl.className = 'cart-item';
+                cartItemEl.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="cart-item-details"><h3>${item.name}</h3><p class="cart-item-price">₹${item.price.toFixed(2)}</p></div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+                    </div>
+                    <button class="remove-item-btn" data-id="${item.id}">×</button>`;
+                cartItemsContainer.appendChild(cartItemEl);
+            });
+        }
+        updateCartState();
+    }
+
+    function updateCartState() {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCountElement.textContent = totalItems;
+        if (totalItems > 0) {
+            cartCountElement.classList.add('bounce');
+            setTimeout(() => cartCountElement.classList.remove('bounce'), 500);
+        }
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        // ✅ FIX 3: Used backticks for the template literal string
+        cartTotalElement.textContent = `₹${totalPrice.toFixed(2)}`;
+    }
+
+    // --- EVENT LISTENERS ---
+    // ✅ FIX: This listener now checks for stock before adding to cart from the product card.
+    productsGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.add-to-cart-btn');
+        if (btn) {
+            const stock = parseInt(btn.dataset.stock, 10);
+            const productId = btn.dataset.id;
+
+            if (stock < 1) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = 'Making in Process...';
+                btn.disabled = true;
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 2500);
+                return;
+            }
+
+            const itemInCart = cart.find(item => item.id === productId);
+            const currentQuantityInCart = itemInCart ? itemInCart.quantity : 0;
+
+            if (currentQuantityInCart >= stock) {
+                alert(`Cannot add more. Only ${stock} available in stock.`);
+                return;
+            }
+
+            addToCart({ 
+                id: btn.dataset.id, 
+                name: btn.dataset.name, 
+                price: parseFloat(btn.dataset.price), 
+                image: btn.dataset.image,
+                stock: stock // Pass stock to be stored in the cart
+            });
+
+            btn.innerHTML = '<i class="fas fa-check"></i> Added!';
+            btn.style.backgroundColor = 'var(--success)';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+                btn.style.backgroundColor = '';
+            }, 1500);
+        }
+    });
+
+    // ✅ FIX: This listener now checks stock when using the +/- buttons in the cart.
+    cartItemsContainer.addEventListener('click', (e) => {
+        const target = e.target;
+        const id = target.dataset.id;
+        if (!id) return;
+        
+        const item = cart.find(i => i.id === id);
+        if (!item) return; // Safety check
+
+        const action = target.dataset.action;
+
+        if (target.matches('.quantity-btn')) {
+            if (action === 'increase') {
+                if (item.quantity < item.stock) {
+                    item.quantity++;
+                } else {
+                    alert(`Cannot add more. Only ${item.stock} available in stock.`);
+                }
+            } else if (action === 'decrease') {
+                item.quantity--;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+        } else if (target.matches('.remove-item-btn')) {
+            cart = cart.filter(i => i.id !== id);
+        }
+        
+        saveCart();
+        renderCart();
+    });
+    
+    
+    checkoutBtn.addEventListener('click', () => {
+        if (cart.length === 0) {
+            alert("Your cart is empty. Please add some products before checking out.");
+            return;
+        }
+        window.location.href = "order-confirmation.html";
+    });
+
+    cartBtn.addEventListener('click', () => cartModal.classList.add('show'));
+    closeCartBtn.addEventListener('click', () => cartModal.classList.remove('show'));
+    cartModal.addEventListener('click', (e) => {
+        if (e.target === cartModal) cartModal.classList.remove('show');
+    });
+    
+    // ✅ FIX 4: Removed duplicated listener. This is the single, correct version.
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.getAttribute('data-filter');
+            const productCards = document.querySelectorAll('.product-card'); 
+            productCards.forEach(card => {
+                card.style.display = 'none';
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const productName = card.querySelector('h3').textContent;
+                    if (productName.toLowerCase().includes(filter.toLowerCase())) {
+                        card.style.display = 'block';
+                    }
+                }
+            });
+        });
+    });
+
+   // window.addEventListener('load', () => {
+   //     loadingScreen.style.opacity = '0';
+   //     setTimeout(() => { loadingScreen.style.display = 'none'; }, 500);
+    //});
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+    });
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('visible', window.pageYOffset > 300);
+    });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // ✅ FIX: Close mobile navigation when a link is clicked
+    navMenu.addEventListener('click', (e) => {
+        // Check if a link inside the nav menu was clicked and the menu is currently active
+        if (e.target.matches('.nav-link') && navMenu.classList.contains('active')) {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('visible', window.pageYOffset > 300);
+    });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // --- INITIALIZATION ---
+    updateAuthenticationState();
+    loadProducts();
+    renderCart();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - Asalkar Healthy Hub</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="icon" href="../static/images/logo.jpg">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Poppins', sans-serif; } </style>
+</head>
+<!-- ✅ 1. ADD THE PRELOADER HTML -->
+    <div class="preloader">
+        <div class="logo-loader">
+            <img src="../static/images/logo.jpg" alt="Asalkar Healthy Hub Loading...">
+        </div>
+        <p class="loader-text">Loading Pure Goodness...</p>
+    </div>
+<body class="bg-gray-100">
+  <header class="bg-green-800 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="homepage.html" class="text-white text-2xl font-bold flex items-center">
+        <img src="../static/images/logo.jpg" alt="Logo" class="h-10 w-10 rounded-full mr-3 border-2 border-yellow-400">
+        Asalkar Healthy Hub
+      </a>
+      <a href="homepage.html" class="text-green-100 hover:text-white font-semibold">← Back to Home</a>
+    </div>
+  </header>
+  <main class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">My Order History</h1>
+    <div id="auth-check"></div>
+    <section id="current-orders-section" class="mb-12 hidden">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b-2 border-yellow-400 pb-2">Current Orders</h2>
+      <div id="current-orders-list" class="space-y-6"></div>
+    </section>
+    <section id="past-orders-section" class="hidden">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2">Past Orders</h2>
+      <div id="past-orders-list" class="space-y-6"></div>
+    </section>
+  </main>
+
+  <script>
+        window.addEventListener('load', () => {
+            const preloader = document.querySelector('.preloader');
+            if (preloader) {
+                preloader.classList.add('hidden');
+            }
+        });
+    </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const userEmail = localStorage.getItem('userEmail');
+  const authCheckDiv = document.getElementById('auth-check');
+  const currentOrdersSection = document.getElementById('current-orders-section');
+  const pastOrdersSection = document.getElementById('past-orders-section');
+  const currentOrdersList = document.getElementById('current-orders-list');
+  const pastOrdersList = document.getElementById('past-orders-list');
+
+  if (!userEmail) {
+    authCheckDiv.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><h2 class="text-2xl font-bold text-red-600 mb-4">Access Denied</h2><p class="text-gray-600 mb-6">You must be logged in to view your order history.</p><a href="auth.html" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Login or Sign Up</a></div>`;
+    return;
+  }
+  fetchUserOrders(userEmail);
+
+  async function fetchUserOrders(email) {
+    try {
+      const response = await fetch('http://localhost:5000/api/user/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message);
+      if (data.orders.length === 0) {
+        authCheckDiv.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><h2 class="text-xl font-semibold text-gray-700">No Orders Found</h2><p class="text-gray-500 mt-2">You haven't placed any orders yet!</p></div>`;
+      } else {
+        displayOrders(data.orders);
+      }
+    } catch (error) {
+      authCheckDiv.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg"><strong>Error:</strong> Could not load your orders.</div>`;
+    }
+  }
+
+  function displayOrders(orders) {
+    let hasCurrent = false, hasPast = false;
+    orders.forEach(order => {
+      const totalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const orderCardHTML = `
+        <div class="bg-white rounded-lg shadow-md overflow-hidden"><div class="p-6">
+          <div class="flex flex-wrap justify-between items-center mb-4">
+            <div><p class="text-sm text-gray-500">Order ID</p><p class="font-bold text-gray-800">...${order._id.slice(-12)}</p></div>
+            <div><p class="text-sm text-gray-500">Date</p><p class="font-semibold text-gray-800">${new Date(order.orderDate).toLocaleDateString()}</p></div>
+            <div><p class="text-sm text-gray-500">Total</p><p class="font-bold text-green-600 text-lg">₹${totalAmount.toFixed(2)}</p></div>
+            <div class="mt-4 sm:mt-0"><spam class="px-3 py-1 text-sm font-semibold round round-full ${order.status === 'Pending' ? 'bg-yellow-200 text-yellow-800' :order.status === 'Canceled' ? 'bg-red-200 text-red-800' :'bg-green-200 text-green-800'}">${order.status}</span></div>
+          </div>
+          <div class="border-t border-gray-200 pt-4"><h4 class="font-semibold text-gray-700 mb-2">Items:</h4><ul class="list-disc list-inside text-gray-600">${order.items.map(item => `<li>${item.name} (x${item.quantity})</li>`).join('')}</ul></div>
+        </div></div>`;
+      if (order.status === 'Pending') {
+        currentOrdersList.innerHTML += orderCardHTML; hasCurrent = true;
+      } else {
+        pastOrdersList.innerHTML += orderCardHTML; hasPast = true;
+      }
+    });
+    if (hasCurrent) currentOrdersSection.classList.remove('hidden');
+    if (hasPast) pastOrdersSection.classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>

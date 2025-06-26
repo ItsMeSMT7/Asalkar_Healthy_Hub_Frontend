@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Confirm Your Order - Asalkar Healthy Hub</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="icon" href="../static/images/logo.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #2c5f2d; --primary-light: #52b69a; --primary-dark: #1b4332; --accent: #ffd60a;
+      --bg-light: #f8fffe; --text-dark: #2d3436;
+    }
+    body { font-family: 'Poppins', sans-serif; background-color: var(--bg-light); }
+    .btn-primary { background-color: var(--primary); color: white; transition: background-color 0.3s; }
+    .btn-primary:hover { background-color: var(--primary-dark); }
+    .text-primary { color: var(--primary); }
+    .ring-primary:focus { --tw-ring-color: var(--primary); }
+    @keyframes slide-up-fade { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+    .animate-slide-up-fade { animation: slide-up-fade 0.7s ease-out both; }
+    #map { height: 250px; border-radius: 0.5rem; border: 1px solid #e9ecef; z-index: 10; margin-top: 1rem; }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <!-- ✅ 1. ADD THE PRELOADER HTML -->
+    <div class="preloader">
+        <div class="logo-loader">
+            <img src="../static/images/logo.jpg" alt="Asalkar Healthy Hub Loading...">
+        </div>
+        <p class="loader-text">Order confirmation...</p>
+    </div>
+  <div class="max-w-3xl w-full">
+    <div id="login-check-message" class="bg-white rounded-lg shadow-xl p-8 text-center hidden"><h2 class="text-2xl font-bold text-red-600 mb-4">Login Required</h2><p class="text-gray-600 mb-6">You must be logged in to place an order.</p><a href="auth.html" class="btn-primary font-bold py-2 px-6 rounded-lg inline-block">Login or Sign Up</a></div>
+    <div id="loading-container" class="bg-white rounded-lg shadow-xl p-8 text-center hidden"><i class="fas fa-spinner fa-spin text-4xl text-primary"></i><p class="mt-4 text-gray-600 font-semibold">Loading your details...</p></div>
+    <div id="main-container" class="bg-white rounded-lg shadow-xl relative pt-12 p-6 sm:p-8 animate-slide-up-fade hidden">
+      <a href="homepage.html" class="absolute top-4 left-5 text-gray-500 hover:text-primary transition font-semibold"><i class="fas fa-arrow-left mr-2"></i>Back to Cart</a>
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-primary">Confirm Your Order</h2>
+        <p class="text-gray-500 mt-2">Welcome back, <strong id="welcome-user-name" class="text-primary">User</strong>!</p>
+      </div>
+      <div id="address-choice-container" class="space-y-4 hidden">
+        <label class="font-bold text-gray-800 block text-xl">1. Select Delivery Address</label>
+        <div id="past-addresses-list" class="space-y-3"></div>
+        <div id="new-address-btn" class="cursor-pointer p-4 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-600 hover:border-primary hover:text-primary transition"><i class="fas fa-plus mr-2"></i> Deliver to a New Address</div>
+      </div>
+      <form id="orderForm" class="space-y-6 hidden">
+        <div id="selected-address-summary" class="hidden">
+            <label class="font-bold text-gray-800 block text-xl mb-2">1. Delivering To:</label>
+            <div class="p-4 bg-green-50 border border-primary rounded-lg">
+                <p id="summary-address-text" class="font-semibold text-gray-800"></p>
+                <a href="#" id="change-address-link" class="text-sm text-primary hover:underline mt-1 inline-block">Change Address</a>
+            </div>
+        </div>
+        <div id="new-address-entry" class="hidden">
+            <label class="font-bold text-gray-800 block text-xl mb-2">1. Enter New Address</label>
+            <input type="text" id="address" placeholder="Street, House No, Area, Landmark" required class="w-full p-3 border border-gray-300 rounded-md ring-primary">
+            <div id="map"></div>
+        </div>
+        <div>
+          <label for="payment" class="font-bold text-gray-800 block text-xl mb-2">2. Select Payment Method</label>
+          <select id="payment" required class="w-full p-3 border border-gray-300 rounded-md ring-primary">
+            <option value="">-- Please Select --</option>
+            <option value="COD">Cash on Delivery</option>
+            <option value="UPI">UPI / Online Payment</option>
+          </select>
+        </div>
+        <div>
+          <button type="submit" class="btn-primary font-bold py-3 w-full rounded-lg shadow-lg transform transition hover:scale-105">
+            <span id="submitButtonText">Place My Order</span>
+          </button>
+        </div>
+      </form>
+      <p class="text-center text-sm mt-6" id="responseMsg"></p>
+    </div>
+  </div>
+
+  <div id="upiModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full text-center animate-slide-up-fade">
+      <h3 class="text-2xl font-bold text-primary mb-2">Scan to Pay</h3>
+      <p class="text-gray-600 mb-4">Use any UPI app to complete the payment.</p>
+     <!-- <img src="../static/images/upi-qr-code.png" alt="UPI QR Code" class="w-56 h-56 mx-auto my-4 border-4 border-yellow-400 rounded-lg p-1">
+       -->
+     <!-- <img src="../static/images/upi-qr-code.png" alt="UPI QR Code for Rajkumar Asalkar" class="w-56 h-56 mx-auto my-4 border-4 border-yellow-400 rounded-lg p-1"> -->
+      <img id="upiQrImage" src="" alt="UPI QR Code" class="w-56 h-56 mx-auto my-4 border-4 border-yellow-400 rounded-lg p-1">
+
+      <p class="text-lg font-semibold">Total Amount: <span id="upiAmount" class="text-2xl font-bold text-primary">₹0.00</span></p>
+      <div class="mt-6 space-y-3">
+        <button id="confirmPaymentBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg w-full">I Have Completed The Payment</button>
+        <button id="closeUpiModalBtn" class="text-gray-500 hover:text-gray-800 font-semibold py-2 w-full">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+        window.addEventListener('load', () => {
+            const preloader = document.querySelector('.preloader');
+            if (preloader) {
+                preloader.classList.add('hidden');
+            }
+        });
+    </script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- ELEMENT SELECTORS ---
+    const loginCheckMessage = document.getElementById('login-check-message');
+    const loadingContainer = document.getElementById('loading-container');
+    const mainContainer = document.getElementById('main-container');
+    const welcomeUserName = document.getElementById('welcome-user-name');
+    const addressChoiceContainer = document.getElementById('address-choice-container');
+    const pastAddressesList = document.getElementById('past-addresses-list');
+    const newAddressBtn = document.getElementById('new-address-btn');
+    const orderForm = document.getElementById('orderForm');
+    const selectedAddressSummary = document.getElementById('selected-address-summary');
+    const summaryAddressText = document.getElementById('summary-address-text');
+    const changeAddressLink = document.getElementById('change-address-link');
+    const newAddressEntry = document.getElementById('new-address-entry');
+    const addressInput = document.getElementById('address'); // The input causing the warning
+    const paymentSelect = document.getElementById('payment');
+    const submitButtonText = document.getElementById('submitButtonText');
+    const responseMsgDiv = document.getElementById('responseMsg');
+    const upiModal = document.getElementById('upiModal');
+    const upiAmountSpan = document.getElementById('upiAmount');
+    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+    const closeUpiModalBtn = document.getElementById('closeUpiModalBtn');
+    
+    // --- STATE & DATA ---
+    const userEmail = localStorage.getItem('userEmail');
+    const userName = localStorage.getItem('userName');
+    const userContact = localStorage.getItem('userContact');
+    let map, marker;
+    let finalAddressString = null;
+    let finalLocation = null;
+    
+    // --- MAP INITIALIZATION ---
+    function initMap(lat = 17.299, lon = 74.537) { /* ... same as before ... */ }
+
+    // --- CORE LOGIC ---
+    async function initializeCheckout() { /* ... same as before ... */ }
+
+    function displayAddressChoices(orders) { /* ... same as before ... */ }
+
+    // ✅ FIX FOR WARNING: The address input is NOT required when a past address is chosen
+    function selectPastAddress(order) {
+        finalAddressString = order.address;
+        finalLocation = { lat: order.latitude, lng: order.longitude };
+        summaryAddressText.textContent = finalAddressString;
+        addressChoiceContainer.classList.add('hidden');
+        newAddressEntry.classList.add('hidden');
+        selectedAddressSummary.classList.remove('hidden');
+        orderForm.classList.remove('hidden');
+        addressInput.required = false; // Tell browser to not validate this hidden input
+    }
+
+    // ✅ FIX FOR WARNING: The address input IS required when the user must enter a new one
+    function showNewAddressForm() {
+        finalAddressString = null; finalLocation = null;
+        addressChoiceContainer.classList.add('hidden');
+        selectedAddressSummary.classList.add('hidden');
+        newAddressEntry.classList.remove('hidden');
+        orderForm.classList.remove('hidden');
+        addressInput.required = true; // Tell browser to validate this visible input
+        initMap();
+    }
+    
+    async function placeOrder() { /* ... same as before ... */ }
+
+    // --- EVENT LISTENERS & INITIALIZATION ---
+    if (!userEmail) { /* ... same as before ... */ } 
+    else { /* ... same as before ... */ }
+    
+    newAddressBtn.addEventListener('click', showNewAddressForm);
+    
+    changeAddressLink.addEventListener('click', (e) => { /* ... same as before ... */ });
+
+    paymentSelect.addEventListener('change', () => { /* ... same as before ... */ });
+    
+    orderForm.addEventListener('submit', async (e) => { /* ... same as before ... */ });
+
+    confirmPaymentBtn.addEventListener('click', async () => { /* ... same as before ... */ });
+
+    closeUpiModalBtn.addEventListener('click', () => { /* ... same as before ... */ });
+
+    // Helper functions to keep the code clean
+    function initMap(lat = 17.299, lon = 74.537) { if(map) map.remove(); map = L.map('map').setView([lat, lon], 15); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); marker = L.marker([lat, lon]).addTo(map).bindPopup("<b>Your Location</b>").openPopup(); finalLocation = { lat, lng: lon }; map.on('click', e => { if (marker) map.removeLayer(marker); marker = L.marker(e.latlng).addTo(map).bindPopup("<b>Delivery Location</b>").openPopup(); finalLocation = e.latlng; }); }
+    async function initializeCheckout() { const response = await fetch('http://localhost:5000/api/user/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: userEmail }) }); const data = await response.json(); loadingContainer.classList.add('hidden'); mainContainer.classList.remove('hidden'); if (data.success && data.orders.length > 0) { displayAddressChoices(data.orders); } else { showNewAddressForm(); } }
+    function displayAddressChoices(orders) { const uniqueAddresses = [...new Map(orders.map(o => [o.address, o])).values()]; pastAddressesList.innerHTML = ''; uniqueAddresses.forEach(order => { const addressCard = document.createElement('div'); addressCard.className = 'cursor-pointer p-4 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-primary transition'; addressCard.innerHTML = `<p class="font-semibold text-gray-800">${order.address}</p>`; addressCard.addEventListener('click', () => selectPastAddress(order)); pastAddressesList.appendChild(addressCard); }); addressChoiceContainer.classList.remove('hidden'); }
+    async function placeOrder() { const addressToSubmit = finalAddressString || addressInput.value.trim(); if (!addressToSubmit || !finalLocation) { alert("Please select or enter a delivery address."); return; } responseMsgDiv.textContent = 'Placing order...'; const orderData = { name: userName, contact: userContact, email: userEmail, address: addressToSubmit, payment: paymentSelect.value, items: JSON.parse(localStorage.getItem("userCart") || "[]"), latitude: finalLocation.lat, longitude: finalLocation.lng }; try { const res = await fetch("http://localhost:5000/api/order/place", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(orderData) }); const result = await res.json(); if (!result.success) throw new Error(result.message); responseMsgDiv.textContent = 'Order Placed! Redirecting...'; localStorage.removeItem("userCart"); setTimeout(() => { window.location.href = "homepage.html"; }, 2000); } catch (err) { responseMsgDiv.textContent = `Error: ${err.message || 'Could not place order.'}`; } }
+    if (!userEmail) { loginCheckMessage.classList.remove('hidden'); } else { loadingContainer.classList.remove('hidden'); welcomeUserName.textContent = userName; initializeCheckout(); }
+    newAddressBtn.addEventListener('click', showNewAddressForm);
+    changeAddressLink.addEventListener('click', (e) => { e.preventDefault(); orderForm.classList.add('hidden'); addressChoiceContainer.classList.remove('hidden'); });
+    paymentSelect.addEventListener('change', () => { submitButtonText.textContent = (paymentSelect.value === 'UPI') ? 'Proceed to Pay with UPI' : 'Place My Order'; });
+    orderForm.addEventListener('submit', async (e) => { e.preventDefault(); if (!paymentSelect.value) { alert("Please select a payment method."); return; } if (paymentSelect.value === 'UPI') { const cart = JSON.parse(localStorage.getItem("userCart") || "[]"); const total = cart.reduce((t, i) => t + (i.price * i.quantity), 0); if (total <= 0) { alert("Your cart is empty."); return; }
+    upiAmountSpan.textContent = `₹${total.toFixed(2)}`;   // ✅ Dynamic QR generation
+  const upiId = "rajkumarasalkar-2@okhdfcbank";
+
+  const payeeName = "Rajkumar Asalkar";
+  const qrUrl = `http://localhost:5000/generate_qr?upi_id=${encodeURIComponent(upiId)}&name=${encodeURIComponent(payeeName)}&amount=${total.toFixed(2)}&note=Order%20Payment`;
+
+  // ✅ Replace QR image
+  document.getElementById("upiQrImage").src = qrUrl;
+
+  upiModal.classList.remove("hidden");
+}
+    else { await placeOrder(); } });
+    confirmPaymentBtn.addEventListener('click', async () => { upiModal.classList.add('hidden'); await placeOrder(); });
+    closeUpiModalBtn.addEventListener('click', () => { upiModal.classList.add('hidden'); });
+});
+</script>
+</body>
+</html>
